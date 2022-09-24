@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import DemonLib
 
 main :: IO ()
 main = someFunc
