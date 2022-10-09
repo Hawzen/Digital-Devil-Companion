@@ -36,6 +36,7 @@ library
     , base >=4.7 && <5
     , bytestring
     , containers
+    , unordered-containers
   default-language: Haskell2010
 
 executable DDS-exe

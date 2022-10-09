@@ -39,6 +39,7 @@ library:
   - containers
   - bytestring
   - aeson
+  - unordered-containers
 
 executables:
   DDS-exe:

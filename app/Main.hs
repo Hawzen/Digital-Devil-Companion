@@ -3,4 +3,6 @@ module Main (main) where
 import DemonLib
 
 main :: IO ()
-main = someFunc
+main = do
+    demonsJsonFile <- B.readfile overclockedDemonDataJsonFilePath
+
