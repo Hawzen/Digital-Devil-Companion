@@ -8,7 +8,7 @@
 
 module DemonLib where
 
-import qualified Data.Map as Map
+import qualified Data.Map as M
 import qualified Data.HashMap.Strict as H
 import qualified Data.ByteString.Lazy as B
 
@@ -54,26 +54,25 @@ data Demon = Demon {
     demonName :: AK.Key,
     demonRace :: Race,
     demonLevel :: Int,
-    demonSkills :: [(String, Level)],
-    demonAffinities :: [(Element, Affinity)]
+    demonSkills :: M.Map SkillName Level,
+    demonAffinities :: M.Map Element Affinity
 } deriving (Show, Eq, Generic)
 
 instance {-# OVERLAPS #-} FromJSON [Demon] where
     parseJSON (Object v) = mapM parseItem $ AKM.toList v
         where
-            -- parseItem :: (String, Value) -> Parser
             parseItem (k, Object v2) =
                 Demon k <$>
                 (readRace <$> v2 .: AK.fromString "race") <*>
                 v2 .: AK.fromString "lvl" <*>
-                (H.toList <$> v2 .: AK.fromString  "command") <*>
+                (M.fromList <$> v2 .: AK.fromString  "command") <*>
                 (translateToAffinitites <$> v2 .: AK.fromString "resists")
 
             readRace raceJSON =
                 read raceJSON :: Race
 
             translateToAffinitites affinityJSON =
-                zip [Physical, Fire, Ice, Electric, Force, Curse] $ Prelude.map translateSingleAffinity affinityJSON
+                M.fromList $ zip  [Physical, Fire, Ice, Electric, Force, Curse] $ Prelude.map translateSingleAffinity affinityJSON
 
             translateSingleAffinity :: Char -> Affinity
             translateSingleAffinity affinityJSONSingle =
@@ -111,8 +110,10 @@ instance FromJSON Stats
 instance ToJSON Stats
 
 
+type SkillName = String
+
 data Skill = Skill {
-    skillName :: String,
+    skillName :: SkillName,
     skillElement :: Element,
     skillCost :: Int,
     skillPreRequisite :: Stats
@@ -135,7 +136,7 @@ data Element =
     | Curse
     | Almighty
     | Recovery
-    deriving (Show, Eq, Generic)
+    deriving (Show, Eq, Generic, Ord)
 
 instance FromJSON Element
 instance ToJSON Element
