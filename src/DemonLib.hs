@@ -158,18 +158,25 @@ instance ToJSON Affinity
 
 
 --  Constants
-vanillaDemonDataJsonFilePath :: String
-vanillaDemonDataJsonFilePath = "assets/ove-demon-data.json"
-overclockedDemonDataJsonFilePath :: String
+vanillaDemonDataJsonFilePath :: FilePath
+vanillaDemonDataJsonFilePath = "assets/van-demon-data.json"
+
+overclockedDemonDataJsonFilePath :: FilePath
 overclockedDemonDataJsonFilePath = "assets/ove-demon-data.json"
 
 
 --  Cool functions
-getOverclockedDemons :: IO (Maybe [Demon])
-getOverclockedDemons = do
-    demonsJsonFile <- B.readFile overclockedDemonDataJsonFilePath
+loadDemons :: FilePath -> IO (Maybe [Demon])
+loadDemons fp = do
+    demonsJsonFile <- B.readFile fp
     let maybeDemons = AE.decode demonsJsonFile :: Maybe [Demon]
     return maybeDemons
+
+getOverclockedDemons :: IO (Maybe [Demon])
+getOverclockedDemons = loadDemons overclockedDemonDataJsonFilePath
+
+getVanillaDemons :: IO (Maybe [Demon])
+getVanillaDemons = loadDemons vanillaDemonDataJsonFilePath
 
 
 someFunc :: IO ()
